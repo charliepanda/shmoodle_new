@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script>
+(function (m, a, z, e) {
+  var s, t;
+  try {
+    t = m.sessionStorage.getItem('maze-us');
+  } catch (err) {}
+
+  if (!t) {
+    t = new Date().getTime();
+    try {
+      m.sessionStorage.setItem('maze-us', t);
+    } catch (err) {}
+  }
+
+  s = a.createElement('script');
+  s.src = z + '?apiKey=' + e;
+  s.async = true;
+  a.getElementsByTagName('head')[0].appendChild(s);
+  m.mazeUniversalSnippetApiKey = e;
+})(window, document, 'https://snippet.maze.co/maze-universal-loader.js', 'e81ba484-3dd1-4c72-a9ae-664ba20aedf3');
+</script>
+    <title>Shmoodle</title>
+    <meta charset="utf-8" />
+        <link href="https://fonts.googleapis.com/css2?family=Karla:wght@400;700&display=swap" rel="stylesheet">
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+  body {
+    font-family: 'Karla', sans-serif;
+    background: #222;
+    color: white;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+
+      /* Commented out video styles since the video is not used */
+      /*
+      video, .buttons {
+        opacity: 0; 
+        transition: opacity 1s ease; 
+      }
+  
+      .fade-in {
+        opacity: 1; 
+      }
+  
+      .fade-out {
+        opacity: 0; 
+      }
+      */
+      .buttons {
+        /* Removed display:none to show buttons immediately */
+        display: flex; 
+        flex-direction: column;
+        align-items: center;
+        margin-top: 20px;
+      }
+  button {
+    margin: 10px;
+    padding: 15px 30px;
+    font-size: 16px;
+    background: white;
+    color: black;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Karla', sans-serif;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: background 0.2s ease;
+  }
+  button:hover {
+    background: #f0f0f0;
+  }
+    </style>
+  </head>
+  <body>
+    <!-- The video element is commented out so it does not appear -->
+    <!--
+    <video id="introVideo" autoplay muted>
+      <source
+        src="https://cdn.glitch.global/14fd68e1-fb97-4c0b-923b-1fd101b30d9f/public%2Ftitle.mp4?v=1737470000296"
+        type="video/mp4"
+      />
+      Your browser does not support the video tag.
+    </video>
+    -->
+
+    <!-- Buttons are now shown immediately -->
+    <div id="buttonContainer" class="buttons">
+      <p>Select a version to start:</p>
+      <button onclick="loadVersion('newmodel_shared.js')">Version 1 (My Color, Static)</button>
+      <button onclick="loadVersion('newmodel_shared_scroll.js')">
+        Version 2 (My Color, Moving)
+      </button>
+      <button onclick="loadVersion('myemo_yourbrush.js')">
+        Version 3 (Partner's Color, Static)
+      </button>
+      <button onclick="loadVersion('myemo_yourbrush_scroll.js')">
+        Version 4 (Partner's Color, Moving)
+      </button>
+
+
+    </div>
+
+    <script>
+      // Since the video is not used, we comment out its related code.
+      // const introVideo = document.getElementById('introVideo');
+      const buttonContainer = document.getElementById('buttonContainer');
+
+      // Show the buttons immediately
+      buttonContainer.style.display = 'flex';
+      // Optionally, you can add a fade-in class if desired
+      // buttonContainer.classList.add('fade-in');
+
+      /* 
+      // Video-related code commented out:
+      // Add fade-in effect to the video on load
+      introVideo.classList.add('fade-in');
+
+      // When the video ends, fade it out and show the buttons after a delay
+      introVideo.addEventListener('ended', () => {
+        introVideo.classList.remove('fade-in');
+        introVideo.classList.add('fade-out'); // Fade out the video
+
+        // Remove the video from the DOM after the fade-out completes
+        setTimeout(() => {
+          introVideo.style.display = 'none'; // Hide the video
+          buttonContainer.style.display = 'flex'; // Make the buttons container visible
+          setTimeout(() => {
+            buttonContainer.classList.add('fade-in'); // Add fade-in effect to the buttons
+          }, 50); // Delay slightly to ensure fade-in works
+        }, 2000); // Match the transition duration for video fade-out (2 seconds)
+      });
+      */
+
+      function loadVersion(scriptName) {
+        // Redirect to the page with the selected script
+        window.location.href = `app.html?script=${scriptName}`;
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script>
+(function (m, a, z, e) {
+  var s, t;
+  try {
+    t = m.sessionStorage.getItem('maze-us');
+  } catch (err) {}
+
+  if (!t) {
+    t = new Date().getTime();
+    try {
+      m.sessionStorage.setItem('maze-us', t);
+    } catch (err) {}
+  }
+
+  s = a.createElement('script');
+  s.src = z + '?apiKey=' + e;
+  s.async = true;
+  a.getElementsByTagName('head')[0].appendChild(s);
+  m.mazeUniversalSnippetApiKey = e;
+})(window, document, 'https://snippet.maze.co/maze-universal-loader.js', 'e81ba484-3dd1-4c72-a9ae-664ba20aedf3');
+</script>
+    <title>Shmoodle</title>
+     <style>
+  body {
+    margin: 0; /* Remove default margins */
+    padding: 0; /* Remove default padding */
+    background-color: black; /* Set background to black */
+    overflow: hidden; /* Prevent scrolling */
+  }
+
+  canvas {
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2); /* Optional glow effect */
+    border: 2px solid rgba(255, 255, 255, 0.2); /* Subtle border for visibility */
+    display: block; /* Ensure canvas has no extra spacing */
+  }
+</style>
+
+    <meta charset="utf-8" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Karla:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/gh/ml5js/Intro-ML-Arts-IMA@ml5-build-10-7-19/ml5_build/ml5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/addons/p5.sound.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
+    <script src="js/clmtrackr.js"></script>
+    <script src="js/emotion_classifier.js"></script>
+    <script src="js/emotionmodel.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/addons/p5.dom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/addons/p5.sound.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+  <body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      // Get the query parameters from the URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const script = urlParams.get('script')
+      const room = urlParams.get('room'); // Room ID (if any)
+
+      // Dynamically load the selected script
+      if (script) {
+        const scriptElement = document.createElement('script');
+        scriptElement.src = script;
+        document.body.appendChild(scriptElement);
+
+        console.log(`Loaded script: ${script}`);
+        if (room) {
+          console.log(`Joined room: ${room}`);
+          // Pass the room ID to the loaded script (optional implementation in the script)
+          // Example: Your script can use `window.roomID = room;` to handle the room
+        }
+      } else {
+        document.body.innerHTML = '<h1>Error: No script selected</h1>';
+      }
+    </script>
+  </body>
+</html>
