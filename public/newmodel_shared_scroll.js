@@ -9,7 +9,8 @@ let brushSize = 10;
 let other = {
   dominantEmotion: 'neutral',
 };
-let lastSentTime = 0;
+let lastScrollTime = 0;
+let scrollSpeed = 50; // pixels per second (adjust this value)
 let throttleInterval = 20; // Send data every 30ms
 
 let partnerConnected = false; // Track if partner is connected
@@ -791,14 +792,19 @@ function gotFaces(error, result) {
 }
 
 function draw() {
-  // Gradually blend your brush color to the target color
   currentColor = lerpColor(currentColor, targetColor, 0.05);
 
-  // Scroll the offscreen canvas
-  canvasGraphics.copy(canvasGraphics, 1, 0, width - 1, height, 0, 0, width - 1, height);
-  canvasGraphics.fill(0); // Fill the right edge with black
-  canvasGraphics.noStroke();
-  canvasGraphics.rect(width - 1, 0, 1, height); // Clear the rightmost column as it scrolls
+  // Time-based scrolling - consistent across all devices
+  let currentTime = millis();
+  let deltaTime = currentTime - lastScrollTime;
+  
+  if (deltaTime >= (1000 / scrollSpeed)) { // Convert pixels/second to milliseconds/pixel
+    canvasGraphics.copy(canvasGraphics, 1, 0, width - 1, height, 0, 0, width - 1, height);
+    canvasGraphics.fill(0);
+    canvasGraphics.noStroke();
+    canvasGraphics.rect(width - 1, 0, 1, height);
+    lastScrollTime = currentTime;
+  }
 
   // Draw the offscreen canvas on the main canvas
   image(canvasGraphics, 0, 0);
