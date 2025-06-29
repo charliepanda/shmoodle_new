@@ -39,15 +39,15 @@ let userCount = 1;
 let connectPopup;
 let connectButton;
 let isInitiator = false; // only user 1 gets the Connect button
-let muteButton, clearButton, toast, inviteToast;
+let clearButton, toast, inviteToast;
 
 let brushInfoLabel, brushInfoHighlight;
 
-// WebRTC variables
-let localStream;
-let remoteStream;
-let peerConnection;
-let isMuted = false; // Mute state
+// // WebRTC variables
+// let localStream;
+// let remoteStream;
+// let peerConnection;
+// let isMuted = false; // Mute state
 
 // Offscreen canvas for scrolling
 let canvasGraphics;
@@ -61,100 +61,100 @@ const rtcConfig = {
   iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
 };
 
-// Initialize WebRTC and request microphone access
-async function initializeWebRTC() {
-  try {
-    // Get local audio stream with better constraints
-    localStream = await navigator.mediaDevices.getUserMedia({
-      audio: {
-        echoCancellation: true,
-        noiseSuppression: true,
-        autoGainControl: true
-      },
-      video: false,
-    });
+// // Initialize WebRTC and request microphone access
+// async function initializeWebRTC() {
+//   try {
+//     // Get local audio stream with better constraints
+//     localStream = await navigator.mediaDevices.getUserMedia({
+//       audio: {
+//         echoCancellation: true,
+//         noiseSuppression: true,
+//         autoGainControl: true
+//       },
+//       video: false,
+//     });
 
-    console.log("Local audio stream acquired:", localStream);
+//     console.log("Local audio stream acquired:", localStream);
 
-    // Create a new WebRTC peer connection
-    peerConnection = new RTCPeerConnection(rtcConfig);
+//     // Create a new WebRTC peer connection
+//     peerConnection = new RTCPeerConnection(rtcConfig);
 
-    // Add local audio stream tracks to the peer connection
-    localStream.getTracks().forEach((track) => {
-      console.log("Adding local track:", track);
-      peerConnection.addTrack(track, localStream);
-    });
+//     // Add local audio stream tracks to the peer connection
+//     localStream.getTracks().forEach((track) => {
+//       console.log("Adding local track:", track);
+//       peerConnection.addTrack(track, localStream);
+//     });
 
-    // Set up remote audio stream
-    remoteStream = new MediaStream();
-    peerConnection.ontrack = (event) => {
-      console.log("Received remote track:", event.track);
-      remoteStream.addTrack(event.track);
+//     // Set up remote audio stream
+//     remoteStream = new MediaStream();
+//     peerConnection.ontrack = (event) => {
+//       console.log("Received remote track:", event.track);
+//       remoteStream.addTrack(event.track);
 
-      // Create and configure remote audio element
-      const remoteAudio = new Audio();
-      remoteAudio.srcObject = remoteStream;
-      remoteAudio.autoplay = true;
-      remoteAudio.controls = false;
+//       // Create and configure remote audio element
+//       const remoteAudio = new Audio();
+//       remoteAudio.srcObject = remoteStream;
+//       remoteAudio.autoplay = true;
+//       remoteAudio.controls = false;
 
-      // Ensure audio plays when track is received
-      remoteAudio.play().catch(error => {
-        console.error("Error playing remote audio:", error);
-      });
+//       // Ensure audio plays when track is received
+//       remoteAudio.play().catch(error => {
+//         console.error("Error playing remote audio:", error);
+//       });
 
-      // Add to DOM to ensure it works across browsers
-      document.body.appendChild(remoteAudio);
-    };
+//       // Add to DOM to ensure it works across browsers
+//       document.body.appendChild(remoteAudio);
+//     };
 
-    // Handle ICE candidates and send them to the server
-    peerConnection.onicecandidate = (event) => {
-      if (event.candidate) {
-        console.log("Sending ICE candidate:", event.candidate);
-        socket.emit("ice-candidate", { candidate: event.candidate, roomID });
-      }
-    };
+//     // Handle ICE candidates and send them to the server
+//     peerConnection.onicecandidate = (event) => {
+//       if (event.candidate) {
+//         console.log("Sending ICE candidate:", event.candidate);
+//         socket.emit("ice-candidate", { candidate: event.candidate, roomID });
+//       }
+//     };
 
-    // Monitor connection state
-    peerConnection.onconnectionstatechange = () => {
-      console.log("Connection state:", peerConnection.connectionState);
-    };
+//     // Monitor connection state
+//     peerConnection.onconnectionstatechange = () => {
+//       console.log("Connection state:", peerConnection.connectionState);
+//     };
 
-    peerConnection.oniceconnectionstatechange = () => {
-      console.log("ICE connection state:", peerConnection.iceConnectionState);
-    };
+//     peerConnection.oniceconnectionstatechange = () => {
+//       console.log("ICE connection state:", peerConnection.iceConnectionState);
+//     };
 
-    console.log("WebRTC initialized");
-  } catch (error) {
-    console.error("Error initializing WebRTC:", error);
-  }
-}
+//     console.log("WebRTC initialized");
+//   } catch (error) {
+//     console.error("Error initializing WebRTC:", error);
+//   }
+// }
 
-// Start the WebRTC call
-async function startCall() {
-  const offer = await peerConnection.createOffer();
-  await peerConnection.setLocalDescription(offer);
+// // Start the WebRTC call
+// async function startCall() {
+//   const offer = await peerConnection.createOffer();
+//   await peerConnection.setLocalDescription(offer);
 
-  // Send the offer to the server
-  socket.emit('offer', { offer: peerConnection.localDescription, roomID });
-  console.log('Offer sent to the server');
-}
+//   // Send the offer to the server
+//   socket.emit('offer', { offer: peerConnection.localDescription, roomID });
+//   console.log('Offer sent to the server');
+// }
 
-// Toggle mute/unmute
-function toggleMute() {
-  isMuted = !isMuted;
-  localStream.getAudioTracks().forEach((track) => {
-    track.enabled = !isMuted; // Enable or disable the audio track
-  });
+// // Toggle mute/unmute
+// function toggleMute() {
+//   isMuted = !isMuted;
+//   localStream.getAudioTracks().forEach((track) => {
+//     track.enabled = !isMuted; // Enable or disable the audio track
+//   });
 
-  // Update button styles and icon based on mute state
-  if (isMuted) {
-    muteButton.style('background', 'rgba(255, 255, 255, 1)'); // Solid white background
-    muteButton.style('color', 'black'); // Black icon
-  } else {
-    muteButton.style('background', 'rgba(58,58,58)'); // Transparent white background
-    muteButton.style('color', 'white'); // White icon
-  }
-}
+//   // Update button styles and icon based on mute state
+//   if (isMuted) {
+//     muteButton.style('background', 'rgba(255, 255, 255, 1)'); // Solid white background
+//     muteButton.style('color', 'black'); // Black icon
+//   } else {
+//     muteButton.style('background', 'rgba(58,58,58)'); // Transparent white background
+//     muteButton.style('color', 'white'); // White icon
+//   }
+// }
 
 
 function setup() {
@@ -209,7 +209,7 @@ function setup() {
   });
 
 
-     initializeWebRTC(); // Initialize WebRTC audio
+     //initializeWebRTC(); // Initialize WebRTC audio
 
 // ───── Invite Toast ─────
 // inviteToast = createDiv("You're all alone right now, send the invite link to your friend and Shmoodle together.");
@@ -380,137 +380,143 @@ function setup() {
 
 
 
-function showConnectPopup() {
-  connectPopup = createDiv();
-  connectPopup.id("connect-popup");
-  connectPopup.style("position", "absolute");
-  connectPopup.style("top", "50%");
-  connectPopup.style("left", "50%");
-  connectPopup.style("transform", "translate(-50%, -50%)");
-  connectPopup.style("background", "rgba(58, 58, 58, 0.95)");
-  connectPopup.style("padding", "32px 40px");
-  connectPopup.style("border-radius", "12px");
-  connectPopup.style("box-shadow", "0 4px 20px rgba(0,0,0,0.35)");
-  connectPopup.style("color", "white");
-  connectPopup.style("font-family", "Karla, sans-serif");
-  connectPopup.style("font-size", "16px");
-  connectPopup.style("text-align", "center");
-  connectPopup.style("z-index", "100");
-  connectPopup.style("line-height", "1.4");
-  connectPopup.style("max-width", "360px");
+// function showConnectPopup() {
+//   connectPopup = createDiv();
+//   connectPopup.id("connect-popup");
+//   connectPopup.style("position", "absolute");
+//   connectPopup.style("top", "50%");
+//   connectPopup.style("left", "50%");
+//   connectPopup.style("transform", "translate(-50%, -50%)");
+//   connectPopup.style("background", "rgba(58, 58, 58, 0.95)");
+//   connectPopup.style("padding", "32px 40px");
+//   connectPopup.style("border-radius", "12px");
+//   connectPopup.style("box-shadow", "0 4px 20px rgba(0,0,0,0.35)");
+//   connectPopup.style("color", "white");
+//   connectPopup.style("font-family", "Karla, sans-serif");
+//   connectPopup.style("font-size", "16px");
+//   connectPopup.style("text-align", "center");
+//   connectPopup.style("z-index", "100");
+//   connectPopup.style("line-height", "1.4");
+//   connectPopup.style("max-width", "360px");
 
-  if (userCount === 2) {
-    if (isInitiator) {
-      connectPopup.html(`
-        <div style="font-size: 20px; font-weight: 600; margin-bottom: 12px;">Your friend just joined!</div>
-        <div style="margin-bottom: 20px;">Tap Connect to start drawing and chatting together.</div>
-      `);
+//   if (userCount === 2) {
+//     if (isInitiator) {
+//       connectPopup.html(`
+//         <div style="font-size: 20px; font-weight: 600; margin-bottom: 12px;">Your friend just joined!</div>
+//         <div style="margin-bottom: 20px;">Tap Connect to start drawing and chatting together.</div>
+//       `);
 
-      connectButton = createButton("Connect");
-      connectButton.parent(connectPopup);
-      connectButton.style("padding", "8px 20px");
-      connectButton.style("font-size", "16px");
-      connectButton.style("font-family", "Karla, sans-serif");
-      connectButton.style("background", "white");
-      connectButton.style("color", "black");
-      connectButton.style("border", "none");
-      connectButton.style("border-radius", "6px");
-      connectButton.style("cursor", "pointer");
+//       connectButton = createButton("Connect");
+//       connectButton.parent(connectPopup);
+//       connectButton.style("padding", "8px 20px");
+//       connectButton.style("font-size", "16px");
+//       connectButton.style("font-family", "Karla, sans-serif");
+//       connectButton.style("background", "white");
+//       connectButton.style("color", "black");
+//       connectButton.style("border", "none");
+//       connectButton.style("border-radius", "6px");
+//       connectButton.style("cursor", "pointer");
 
-      connectButton.mousePressed(async () => {
-        socket.emit("clearCanvasForBoth", { roomID });
-        connectPopup.remove();
+//       connectButton.mousePressed(async () => {
+//         socket.emit("clearCanvasForBoth", { roomID });
+//         connectPopup.remove();
 
-        // Ensure WebRTC is properly initialized before starting call
-        if (!localStream || !peerConnection) {
-          await initializeWebRTC();
-        }
+//         // Ensure WebRTC is properly initialized before starting call
+//         if (!localStream || !peerConnection) {
+//           await initializeWebRTC();
+//         }
 
-        startCall();
-        muteButton.show();
-        socket.emit("startCallFromInitiator", { roomID });
+//         startCall();
+//         muteButton.show();
+//         socket.emit("startCallFromInitiator", { roomID });
         
-        // Show audio confirmation toast
-        showAudioConfirmationToast();
-      });
-    } else {
-      connectPopup.html(`
-        <div style="font-size: 20px; font-weight: 600; margin-bottom: 12px;">Waiting for your friend…</div>
-        <div>Your friend will start the session shortly.</div>
-      `);
-    }
-  }
-}
+//         // Show audio confirmation toast
+//         showAudioConfirmationToast();
+//       });
+//     } else {
+//       connectPopup.html(`
+//         <div style="font-size: 20px; font-weight: 600; margin-bottom: 12px;">Waiting for your friend…</div>
+//         <div>Your friend will start the session shortly.</div>
+//       `);
+//     }
+//   }
+// }
 
 // Listen for room status updates
-socket.on('roomStatus', (numUsers) => {
-  userCount = numUsers;
+  socket.on("roomStatus", (numUsers) => {
+    userCount = numUsers; // ← Update here
 
-  if (numUsers > 1) {
-    inviteToast.style("display", "none");
-    // Only show connect popup if it hasn't been shown before
-    if (!connectPopup || connectPopup.removed) {
-      showConnectPopup();
-    }
-    muteButton.show();
-    topicButton.show(); // Show topic button when partner joins
-  } else {
-    muteButton.hide();
-    topicButton.hide(); // Hide topic button when alone
+    if (numUsers > 1) {
+      partnerConnected = true;
+      inviteToast.style("display", "none");
+      showPartnerJoinedNotification(); // Show simple notification
+      topicButton.show(); // Show topic button when partner joins
+      
+      // Clear the canvas when partner joins
+      drawings.clear();
+      background(0);
+    } else {
+      // Only show invite toast if we had a partner before and now we don't
+      if (partnerConnected) {
+        inviteToast.style("display", "flex");
+      }
+      partnerConnected = false;
+      topicButton.hide(); // Hide topic button when alone
 
-    // Only show invite toast if welcome flow is complete and we're truly alone
-    if (welcomeOverlay && !welcomeOverlay.removed) return;
-    if (!connectPopup || connectPopup.removed) {
-      inviteToast.style("display", "flex");
+      if (welcomeOverlay && !welcomeOverlay.removed) return;
+
+      // Don't show invite toast during initial welcome flow
+      if (!welcomeActive && userCount === 1) {
+        inviteToast.style("display", "flex");
+      }
     }
-  }
-});
+  });
 
   socket.on("clearCanvasNow", () => {
     canvasGraphics.background(0);
   });
 
-  socket.on("startCallFromInitiator", () => {
-    if (connectPopup) connectPopup.remove();
-    muteButton.show();
-  });
+  // socket.on("startCallFromInitiator", () => {
+  //   if (connectPopup) connectPopup.remove();
+  //   muteButton.show();
+  // });
 
-  socket.on("startCallNow", () => {
-    if (connectPopup) connectPopup.remove();
-    showAudioConfirmationToast();
-  });
+  // socket.on("startCallNow", () => {
+  //   if (connectPopup) connectPopup.remove();
+  //   showAudioConfirmationToast();
+  // });
 
   // Function to show audio confirmation toast
-  function showAudioConfirmationToast() {
-    const audioToast = createDiv();
-    audioToast.id("audio-toast");
-    audioToast.style("position", "absolute");
-    audioToast.style("top", "20px");
-    audioToast.style("left", "50%");
-    audioToast.style("transform", "translateX(-50%)");
-    audioToast.style("background", "rgba(58, 58, 58, 0.95)");
-    audioToast.style("color", "white");
-    audioToast.style("padding", "16px 24px");
-    audioToast.style("border-radius", "8px");
-    audioToast.style("font-family", "'Karla', sans-serif");
-    audioToast.style("font-size", "16px");
-    audioToast.style("font-weight", "500");
-    audioToast.style("z-index", "100");
-    audioToast.style("text-align", "center");
-    audioToast.style("box-shadow", "0 4px 10px rgba(0,0,0,0.3)");
-    audioToast.style("line-height", "1.4");
-    audioToast.style("max-width", "400px");
+  // function showAudioConfirmationToast() {
+  //   const audioToast = createDiv();
+  //   audioToast.id("audio-toast");
+  //   audioToast.style("position", "absolute");
+  //   audioToast.style("top", "20px");
+  //   audioToast.style("left", "50%");
+  //   audioToast.style("transform", "translateX(-50%)");
+  //   audioToast.style("background", "rgba(58, 58, 58, 0.95)");
+  //   audioToast.style("color", "white");
+  //   audioToast.style("padding", "16px 24px");
+  //   audioToast.style("border-radius", "8px");
+  //   audioToast.style("font-family", "'Karla', sans-serif");
+  //   audioToast.style("font-size", "16px");
+  //   audioToast.style("font-weight", "500");
+  //   audioToast.style("z-index", "100");
+  //   audioToast.style("text-align", "center");
+  //   audioToast.style("box-shadow", "0 4px 10px rgba(0,0,0,0.3)");
+  //   audioToast.style("line-height", "1.4");
+  //   audioToast.style("max-width", "400px");
 
-    audioToast.html("You should hear each other now. If you don't, call your partner on your phone and put it on speaker near your computer.");
+  //   audioToast.html("You should hear each other now. If you don't, call your partner on your phone and put it on speaker near your computer.");
 
-    const gotItButton = createButton("Got it");
-    gotItButton.parent(audioToast);
-    gotItButton.style("margin-top", "12px");
-    gotItButton.addClass("toast-button");
-    gotItButton.mousePressed(() => {
-      audioToast.remove();
-    });
-  }
+  //   const gotItButton = createButton("Got it");
+  //   gotItButton.parent(audioToast);
+  //   gotItButton.style("margin-top", "12px");
+  //   gotItButton.addClass("toast-button");
+  //   gotItButton.mousePressed(() => {
+  //     audioToast.remove();
+  //   });
+  // }
 
 
 // // Handle invite partner button click
@@ -544,24 +550,24 @@ socket.on('roomStatus', (numUsers) => {
 // });
 
 
-// Add a button to toggle mute/unmute
-muteButton = createButton('<i class="fa-solid fa-microphone-slash"></i>'); // Font Awesome icon
-muteButton.position(40, height - 80); // Bottom-left of the screen
-muteButton.style('width', '60px');
-muteButton.style('height', '60px');
-muteButton.style('font-size', '24px'); // Font Awesome size
-muteButton.style('background', 'rgba(58,58,58)'); // Initial transparent white background
-muteButton.style('color', 'white'); // Initial white icon color
-muteButton.style('border', 'none');
-muteButton.style('border-radius', '50%'); // Circular button
-muteButton.style('display', 'flex');
-muteButton.style('align-items', 'center');
-muteButton.style('justify-content', 'center');
-muteButton.style('cursor', 'pointer');
-muteButton.mousePressed(toggleMute);
-muteButton.mouseOver(() => (noCanvasInteraction = true)); // Prevent drawing when hovering over the button
-muteButton.mouseOut(() => (noCanvasInteraction = false)); // Re-enable drawing
-  muteButton.hide();
+// // Add a button to toggle mute/unmute
+// muteButton = createButton('<i class="fa-solid fa-microphone-slash"></i>'); // Font Awesome icon
+// muteButton.position(40, height - 80); // Bottom-left of the screen
+// muteButton.style('width', '60px');
+// muteButton.style('height', '60px');
+// muteButton.style('font-size', '24px'); // Font Awesome size
+// muteButton.style('background', 'rgba(58,58,58)'); // Initial transparent white background
+// muteButton.style('color', 'white'); // Initial white icon color
+// muteButton.style('border', 'none');
+// muteButton.style('border-radius', '50%'); // Circular button
+// muteButton.style('display', 'flex');
+// muteButton.style('align-items', 'center');
+// muteButton.style('justify-content', 'center');
+// muteButton.style('cursor', 'pointer');
+// muteButton.mousePressed(toggleMute);
+// muteButton.mouseOver(() => (noCanvasInteraction = true)); // Prevent drawing when hovering over the button
+// muteButton.mouseOut(() => (noCanvasInteraction = false)); // Re-enable drawing
+//   muteButton.hide();
 
   // Create topic button in bottom right corner
   const topicButton = createButton('<i class="fa-solid fa-comment"></i>');
@@ -622,6 +628,36 @@ muteButton.mouseOut(() => (noCanvasInteraction = false)); // Re-enable drawing
     topicTooltip.style("display", "none");
   });
 
+  function showPartnerJoinedNotification() {
+    const notification = createDiv();
+    notification.id("partner-joined-notification");
+    notification.style("position", "absolute");
+    notification.style("top", "50%");
+    notification.style("left", "50%");
+    notification.style("transform", "translate(-50%, -50%)");
+    notification.style("background", "rgba(58, 58, 58, 0.95)");
+    notification.style("padding", "32px 40px");
+    notification.style("border-radius", "12px");
+    notification.style("box-shadow", "0 4px 20px rgba(0,0,0,0.35)");
+    notification.style("color", "white");
+    notification.style("font-family", "Karla, sans-serif");
+    notification.style("font-size", "18px");
+    notification.style("text-align", "center");
+    notification.style("z-index", "100");
+    notification.style("line-height", "1.4");
+    notification.style("max-width", "360px");
+
+    notification.html(`
+      <div style="font-size: 22px; font-weight: 600; margin-bottom: 12px;">🎉 Your friend just joined!</div>
+      <div>You can now start drawing together.</div>
+    `);
+
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+      notification.remove();
+    }, 4000);
+  }
+  
   topicButton.mousePressed(() => {
     // Show the tooltip above the button
     const buttonX = windowWidth - 80;
@@ -654,38 +690,38 @@ muteButton.mouseOut(() => (noCanvasInteraction = false)); // Re-enable drawing
     }
   });
 
-    // WebRTC signaling listeners
-  socket.on("offer", async (data) => {
-    if (data.roomID !== roomID) return; // Ignore if it's for another room
-    console.log("Received offer:", data.offer);
-    await peerConnection.setRemoteDescription(
-      new RTCSessionDescription(data.offer),
-    );
+  //   // WebRTC signaling listeners
+  // socket.on("offer", async (data) => {
+  //   if (data.roomID !== roomID) return; // Ignore if it's for another room
+  //   console.log("Received offer:", data.offer);
+  //   await peerConnection.setRemoteDescription(
+  //     new RTCSessionDescription(data.offer),
+  //   );
 
-    const answer = await peerConnection.createAnswer();
-    await peerConnection.setLocalDescription(answer);
+  //   const answer = await peerConnection.createAnswer();
+  //   await peerConnection.setLocalDescription(answer);
 
-    // Send the answer back to the server
-    socket.emit("answer", { answer: peerConnection.localDescription, roomID });
-  });
+  //   // Send the answer back to the server
+  //   socket.emit("answer", { answer: peerConnection.localDescription, roomID });
+  // });
 
-  socket.on("answer", async (data) => {
-    if (data.roomID !== roomID) return; // Ignore if it's for another room
-    console.log("Received answer:", data.answer);
-    await peerConnection.setRemoteDescription(
-      new RTCSessionDescription(data.answer),
-    );
-  });
+  // socket.on("answer", async (data) => {
+  //   if (data.roomID !== roomID) return; // Ignore if it's for another room
+  //   console.log("Received answer:", data.answer);
+  //   await peerConnection.setRemoteDescription(
+  //     new RTCSessionDescription(data.answer),
+  //   );
+  // });
 
-  socket.on("ice-candidate", async (data) => {
-    if (data.roomID !== roomID) return; // Ignore if it's for another room
-    console.log("Received ICE candidate:", data.candidate);
-    try {
-      await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
-    } catch (error) {
-      console.error("Error adding ICE candidate:", error);
-    }
-  });
+  // socket.on("ice-candidate", async (data) => {
+  //   if (data.roomID !== roomID) return; // Ignore if it's for another room
+  //   console.log("Received ICE candidate:", data.candidate);
+  //   try {
+  //     await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+  //   } catch (error) {
+  //     console.error("Error adding ICE candidate:", error);
+  //   }
+  // });
 
 
   // Default brush colors
