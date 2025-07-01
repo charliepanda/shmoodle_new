@@ -309,6 +309,36 @@ function setup() {
     topicTooltip.style("display", "none");
   });
 
+   function showPartnerJoinedNotification() {
+    const notification = createDiv();
+    notification.id("partner-joined-notification");
+    notification.style("position", "absolute");
+    notification.style("top", "50%");
+    notification.style("left", "50%");
+    notification.style("transform", "translate(-50%, -50%)");
+    notification.style("background", "rgba(58, 58, 58, 0.95)");
+    notification.style("padding", "32px 40px");
+    notification.style("border-radius", "12px");
+    notification.style("box-shadow", "0 4px 20px rgba(0,0,0,0.35)");
+    notification.style("color", "white");
+    notification.style("font-family", "Karla, sans-serif");
+    notification.style("font-size", "18px");
+    notification.style("text-align", "center");
+    notification.style("z-index", "100");
+    notification.style("line-height", "1.4");
+    notification.style("max-width", "360px");
+
+    notification.html(`
+      <div style="font-size: 22px; font-weight: 600; margin-bottom: 12px;">🎉 Your friend just joined!</div>
+      <div>You can now start drawing together.</div>
+    `);
+
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+      notification.remove();
+    }, 4000);
+  }
+
   topicButton.mousePressed(() => {
     // Show the tooltip above the button
     const buttonX = windowWidth - 80;
