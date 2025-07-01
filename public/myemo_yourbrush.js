@@ -32,14 +32,14 @@ let drawings;
 // Video capture
 let videoInput;
 
-// WebRTC variables
-let localStream;
-let remoteStream;
-let peerConnection;
-let isMuted = false; // Mute state
+// // WebRTC variables
+// let localStream;
+// let remoteStream;
+// let peerConnection;
+// let isMuted = false; // Mute state
 
-let muteButton, clearButton, toast, inviteToast, startCallBtnInToast;
-let connectPopup;
+let clearButton, toast, inviteToast, startCallBtnInToast;
+// let connectPopup;
 let connectButton;
 let isInitiator = false; // only user 1 gets the Connect button
 let userCount = 1; // Assume alone until told otherwise
@@ -61,67 +61,67 @@ const rtcConfig = {
   iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
 };
 
-// Initialize WebRTC and request microphone access
-async function initializeWebRTC() {
-  try {
-    // Get local audio stream
-    localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+// // Initialize WebRTC and request microphone access
+// async function initializeWebRTC() {
+//   try {
+//     // Get local audio stream
+//     localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
 
-    // Create a new WebRTC peer connection
-    peerConnection = new RTCPeerConnection(rtcConfig);
+//     // Create a new WebRTC peer connection
+//     peerConnection = new RTCPeerConnection(rtcConfig);
 
-    // Add local audio stream tracks to the peer connection
-    localStream.getTracks().forEach((track) => peerConnection.addTrack(track, localStream));
+//     // Add local audio stream tracks to the peer connection
+//     localStream.getTracks().forEach((track) => peerConnection.addTrack(track, localStream));
 
-    // Set up remote audio stream
-    remoteStream = new MediaStream();
-    peerConnection.ontrack = (event) => {
-      remoteStream.addTrack(event.track);
-      // Play the remote stream through an audio element
-      const remoteAudio = new Audio();
-      remoteAudio.srcObject = remoteStream;
-      remoteAudio.play();
-    };
+//     // Set up remote audio stream
+//     remoteStream = new MediaStream();
+//     peerConnection.ontrack = (event) => {
+//       remoteStream.addTrack(event.track);
+//       // Play the remote stream through an audio element
+//       const remoteAudio = new Audio();
+//       remoteAudio.srcObject = remoteStream;
+//       remoteAudio.play();
+//     };
 
-    // Handle ICE candidates and send them to the server
-    peerConnection.onicecandidate = (event) => {
-      if (event.candidate) {
-        socket.emit('ice-candidate', { candidate: event.candidate, roomID });
-      }
-    };
+//     // Handle ICE candidates and send them to the server
+//     peerConnection.onicecandidate = (event) => {
+//       if (event.candidate) {
+//         socket.emit('ice-candidate', { candidate: event.candidate, roomID });
+//       }
+//     };
 
-    console.log('WebRTC initialized');
-  } catch (error) {
-    console.error('Error initializing WebRTC:', error);
-  }
-}
+//     console.log('WebRTC initialized');
+//   } catch (error) {
+//     console.error('Error initializing WebRTC:', error);
+//   }
+// }
 
-// Start the WebRTC call
-async function startCall() {
-  const offer = await peerConnection.createOffer();
-  await peerConnection.setLocalDescription(offer);
+// // Start the WebRTC call
+// async function startCall() {
+//   const offer = await peerConnection.createOffer();
+//   await peerConnection.setLocalDescription(offer);
 
-  // Send the offer to the server
-  socket.emit('offer', { offer: peerConnection.localDescription, roomID });
-  console.log('Offer sent to the server');
-}
+//   // Send the offer to the server
+//   socket.emit('offer', { offer: peerConnection.localDescription, roomID });
+//   console.log('Offer sent to the server');
+// }
 
-// Toggle mute/unmute
-function toggleMute() {
-  isMuted = !isMuted;
-  localStream.getAudioTracks().forEach((track) => {
-    track.enabled = !isMuted; // Enable or disable the audio track
-  });
+// // Toggle mute/unmute
+// function toggleMute() {
+//   isMuted = !isMuted;
+//   localStream.getAudioTracks().forEach((track) => {
+//     track.enabled = !isMuted; // Enable or disable the audio track
+//   });
 
   // Update button styles and icon based on mute state
-  if (isMuted) {
-    muteButton.style('background', 'rgba(255, 255, 255, 1)'); // Solid white background
-    muteButton.style('color', 'black'); // Black icon
-  } else {
-    muteButton.style('background', 'rgba(58,58,58)'); // Transparent white background
-    muteButton.style('color', 'white'); // White icon
-  }
-}
+  // if (isMuted) {
+  //   muteButton.style('background', 'rgba(255, 255, 255, 1)'); // Solid white background
+  //   muteButton.style('color', 'black'); // Black icon
+  // } else {
+  //   muteButton.style('background', 'rgba(58,58,58)'); // Transparent white background
+  //   muteButton.style('color', 'white'); // White icon
+  // }
+// }
 
 function setup() {
   // Extract roomID from URL or create a new one
@@ -180,29 +180,29 @@ function setup() {
   };
   faceApi = ml5.faceApi(videoInput, faceOptions, faceReady);
 
-  initializeWebRTC(); // Initialize WebRTC audio
+  // initializeWebRTC(); // Initialize WebRTC audio
 
   // // Add a button to start the call
   // const callButton = createButton('Start Call');
   // callButton.position(10, 10);
   // callButton.mousePressed(startCall);
 
-  // Add a button to toggle mute/unmute
-  muteButton = createButton('<i class="fa-solid fa-microphone-slash"></i>');
-  muteButton.position(20, windowHeight - 80);
-  muteButton.style('width', '60px');
-  muteButton.style('height', '60px');
-  muteButton.style('font-size', '24px');
-  muteButton.style('background', 'rgba(58,58,58)');
-  muteButton.style('color', 'white');
-  muteButton.style('border', 'none');
-  muteButton.style('border-radius', '50%');
-  muteButton.style('display', 'flex');
-  muteButton.style('align-items', 'center');
-  muteButton.style('justify-content', 'center');
-  muteButton.style('cursor', 'pointer');
-  muteButton.mousePressed(toggleMute);
-  muteButton.hide();
+  // // Add a button to toggle mute/unmute
+  // muteButton = createButton('<i class="fa-solid fa-microphone-slash"></i>');
+  // muteButton.position(20, windowHeight - 80);
+  // muteButton.style('width', '60px');
+  // muteButton.style('height', '60px');
+  // muteButton.style('font-size', '24px');
+  // muteButton.style('background', 'rgba(58,58,58)');
+  // muteButton.style('color', 'white');
+  // muteButton.style('border', 'none');
+  // muteButton.style('border-radius', '50%');
+  // muteButton.style('display', 'flex');
+  // muteButton.style('align-items', 'center');
+  // muteButton.style('justify-content', 'center');
+  // muteButton.style('cursor', 'pointer');
+  // muteButton.mousePressed(toggleMute);
+  // muteButton.hide();
 
   // ── Initialize our brush color variables ──
   // These start as white.
@@ -298,67 +298,67 @@ brushInfoHighlight.parent(brushInfoLabel);
     e.stopPropagation();
   });
 
-  function showConnectPopup() {
-    connectPopup = createDiv();
-    connectPopup.id("connect-popup");
-    connectPopup.style("position", "absolute");
-    connectPopup.style("top", "50%");
-    connectPopup.style("left", "50%");
-    connectPopup.style("transform", "translate(-50%, -50%)");
-    connectPopup.style("background", "rgba(58, 58, 58, 0.95)");
-    connectPopup.style("padding", "32px 40px");
-    connectPopup.style("border-radius", "12px");
-    connectPopup.style("box-shadow", "0 4px 20px rgba(0,0,0,0.35)");
-    connectPopup.style("color", "white");
-    connectPopup.style("font-family", "Karla, sans-serif");
-    connectPopup.style("font-size", "16px");
-    connectPopup.style("text-align", "center");
-    connectPopup.style("z-index", "100");
-    connectPopup.style("line-height", "1.4");
-    connectPopup.style("max-width", "360px");
+  // function showConnectPopup() {
+  //   connectPopup = createDiv();
+  //   connectPopup.id("connect-popup");
+  //   connectPopup.style("position", "absolute");
+  //   connectPopup.style("top", "50%");
+  //   connectPopup.style("left", "50%");
+  //   connectPopup.style("transform", "translate(-50%, -50%)");
+  //   connectPopup.style("background", "rgba(58, 58, 58, 0.95)");
+  //   connectPopup.style("padding", "32px 40px");
+  //   connectPopup.style("border-radius", "12px");
+  //   connectPopup.style("box-shadow", "0 4px 20px rgba(0,0,0,0.35)");
+  //   connectPopup.style("color", "white");
+  //   connectPopup.style("font-family", "Karla, sans-serif");
+  //   connectPopup.style("font-size", "16px");
+  //   connectPopup.style("text-align", "center");
+  //   connectPopup.style("z-index", "100");
+  //   connectPopup.style("line-height", "1.4");
+  //   connectPopup.style("max-width", "360px");
 
-    if (userCount === 2) {
-      if (isUser1) {
-        connectPopup.html(`
-        <div style="font-size: 20px; font-weight: 600; margin-bottom: 12px;">Your friend just joined!</div>
-        <div style="margin-bottom: 20px;">Tap Connect to start drawing and chatting together.</div>
-      `);
+  //   if (userCount === 2) {
+  //     if (isUser1) {
+  //       connectPopup.html(`
+  //       <div style="font-size: 20px; font-weight: 600; margin-bottom: 12px;">Your friend just joined!</div>
+  //       <div style="margin-bottom: 20px;">Tap Connect to start drawing and chatting together.</div>
+  //     `);
 
-        connectButton = createButton("Connect");
-        connectButton.parent(connectPopup);
-        connectButton.style("padding", "8px 20px");
-        connectButton.style("font-size", "16px");
-        connectButton.style("font-family", "Karla, sans-serif");
-        connectButton.style("background", "white");
-        connectButton.style("color", "black");
-        connectButton.style("border", "none");
-        connectButton.style("border-radius", "6px");
-        connectButton.style("cursor", "pointer");
+  //       connectButton = createButton("Connect");
+  //       connectButton.parent(connectPopup);
+  //       connectButton.style("padding", "8px 20px");
+  //       connectButton.style("font-size", "16px");
+  //       connectButton.style("font-family", "Karla, sans-serif");
+  //       connectButton.style("background", "white");
+  //       connectButton.style("color", "black");
+  //       connectButton.style("border", "none");
+  //       connectButton.style("border-radius", "6px");
+  //       connectButton.style("cursor", "pointer");
 
-        connectButton.mousePressed(async () => {
-          socket.emit("clearCanvasForBoth", { roomID });
-          connectPopup.remove();
+  //       connectButton.mousePressed(async () => {
+  //         socket.emit("clearCanvasForBoth", { roomID });
+  //         connectPopup.remove();
 
-          // Ensure WebRTC is properly initialized before starting call
-          if (!localStream || !peerConnection) {
-            await initializeWebRTC();
-          }
+  //         // Ensure WebRTC is properly initialized before starting call
+  //         if (!localStream || !peerConnection) {
+  //           await initializeWebRTC();
+  //         }
 
-          startCall();
-          muteButton.show();
-          socket.emit("startCallFromInitiator", { roomID });
+  //         startCall();
+  //         muteButton.show();
+  //         socket.emit("startCallFromInitiator", { roomID });
 
-        // Show audio confirmation toast
-        showAudioConfirmationToast();
-        });
-      } else {
-        connectPopup.html(`
-        <div style="font-size: 20px; font-weight: 600; margin-bottom: 12px;">Waiting for your friend…</div>
-        <div>Your friend will start the session shortly.</div>
-      `);
-      }
-    }
-  }
+  //       // Show audio confirmation toast
+  //       showAudioConfirmationToast();
+  //       });
+  //     } else {
+  //       connectPopup.html(`
+  //       <div style="font-size: 20px; font-weight: 600; margin-bottom: 12px;">Waiting for your friend…</div>
+  //       <div>Your friend will start the session shortly.</div>
+  //     `);
+  //     }
+  //   }
+  // }
 
     // callButton.mousePressed(startCall);
 
@@ -368,10 +368,10 @@ brushInfoHighlight.parent(brushInfoLabel);
     background(0);
   });
 
-  socket.on("startCallFromInitiator", () => {
-    if (connectPopup) connectPopup.remove();
-    muteButton.show();
-  });
+  // socket.on("startCallFromInitiator", () => {
+  //   if (connectPopup) connectPopup.remove();
+  //   muteButton.show();
+  // });
 
   clearButton = createButton('<i class="fa-duotone fa-solid fa-eraser"></i>');
   clearButton.position(windowWidth - 80, windowHeight - 80);
@@ -450,6 +450,37 @@ brushInfoHighlight.parent(brushInfoLabel);
     topicTooltip.style("display", "none");
   });
 
+
+  function showPartnerJoinedNotification() {
+    const notification = createDiv();
+    notification.id("partner-joined-notification");
+    notification.style("position", "absolute");
+    notification.style("top", "50%");
+    notification.style("left", "50%");
+    notification.style("transform", "translate(-50%, -50%)");
+    notification.style("background", "rgba(58, 58, 58, 0.95)");
+    notification.style("padding", "32px 40px");
+    notification.style("border-radius", "12px");
+    notification.style("box-shadow", "0 4px 20px rgba(0,0,0,0.35)");
+    notification.style("color", "white");
+    notification.style("font-family", "Karla, sans-serif");
+    notification.style("font-size", "18px");
+    notification.style("text-align", "center");
+    notification.style("z-index", "100");
+    notification.style("line-height", "1.4");
+    notification.style("max-width", "360px");
+
+    notification.html(`
+      <div style="font-size: 22px; font-weight: 600; margin-bottom: 12px;">🎉 Your friend just joined!</div>
+      <div>You can now start drawing together.</div>
+    `);
+
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+      notification.remove();
+    }, 4000);
+  }
+  
   topicButton.mousePressed(() => {
     // Show the tooltip above the button
     const clearBtnX = windowWidth - 80;
@@ -460,33 +491,40 @@ brushInfoHighlight.parent(brushInfoLabel);
     topicTooltip.style("display", "block");
   });
 
-  socket.on('roomStatus', (numUsers) => {
-    userCount = numUsers;
+// Listen for room status updates
+  socket.on("roomStatus", (numUsers) => {
+    userCount = numUsers; // ← Update here
 
     if (numUsers > 1) {
+      partnerConnected = true;
       inviteToast.style("display", "none");
-      // Only show connect popup if it hasn't been shown before
-      if (!connectPopup || connectPopup.removed) {
-        showConnectPopup();
-      }
-      muteButton.show();
+      showPartnerJoinedNotification(); // Show simple notification
       topicButton.show(); // Show topic button when partner joins
+      
+      // Clear the canvas when partner joins
+      drawings.clear();
+      background(0);
     } else {
-      muteButton.hide();
+      // Only show invite toast if we had a partner before and now we don't
+      if (partnerConnected) {
+        inviteToast.style("display", "flex");
+      }
+      partnerConnected = false;
       topicButton.hide(); // Hide topic button when alone
 
-      // Only show invite toast if welcome flow is complete and we're truly alone
       if (welcomeOverlay && !welcomeOverlay.removed) return;
-      if (!connectPopup || connectPopup.removed) {
+
+      // Don't show invite toast during initial welcome flow
+      if (!welcomeActive && userCount === 1) {
         inviteToast.style("display", "flex");
       }
     }
   });
 
-  socket.on("startCallNow", () => {
-    if (connectPopup) connectPopup.remove();
-    muteButton.show();
-  });
+  // socket.on("startCallNow", () => {
+  //   if (connectPopup) connectPopup.remove();
+  //   muteButton.show();
+  // });
 
   // === 🧁 Multi-Step Welcome Flow ===
   if (userCount === 1 && isUser1) {
@@ -564,34 +602,34 @@ brushInfoHighlight.parent(brushInfoLabel);
     }
   });
 
-  // WebRTC signaling listeners
-  socket.on('offer', async (data) => {
-    if (data.roomID !== roomID) return; // Ignore if it's for another room
-    console.log('Received offer:', data.offer);
-    await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+  // // WebRTC signaling listeners
+  // socket.on('offer', async (data) => {
+  //   if (data.roomID !== roomID) return; // Ignore if it's for another room
+  //   console.log('Received offer:', data.offer);
+  //   await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
 
-    const answer = await peerConnection.createAnswer();
-    await peerConnection.setLocalDescription(answer);
+  //   const answer = await peerConnection.createAnswer();
+  //   await peerConnection.setLocalDescription(answer);
 
-    // Send the answer back to the server
-    socket.emit('answer', { answer: peerConnection.localDescription, roomID });
-  });
+  //   // Send the answer back to the server
+  //   socket.emit('answer', { answer: peerConnection.localDescription, roomID });
+  // });
 
-  socket.on('answer', async (data) => {
-    if (data.roomID !== roomID) return; // Ignore if it's for another room
-    console.log('Received answer:', data.answer);
-    await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
-  });
+  // socket.on('answer', async (data) => {
+  //   if (data.roomID !== roomID) return; // Ignore if it's for another room
+  //   console.log('Received answer:', data.answer);
+  //   await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+  // });
 
-  socket.on('ice-candidate', async (data) => {
-    if (data.roomID !== roomID) return; // Ignore if it's for another room
-    console.log('Received ICE candidate:', data.candidate);
-    try {
-      await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
-    } catch (error) {
-      console.error('Error adding ICE candidate:', error);
-    }
-  });
+  // socket.on('ice-candidate', async (data) => {
+  //   if (data.roomID !== roomID) return; // Ignore if it's for another room
+  //   console.log('Received ICE candidate:', data.candidate);
+  //   try {
+  //     await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+  //   } catch (error) {
+  //     console.error('Error adding ICE candidate:', error);
+  //   }
+  // });
 
 }
 
@@ -693,58 +731,58 @@ function windowResized() {
   topicButton.position(clearBtnX - 80, clearBtnY); // 80px to the left of the clear button
 }
 
-function showAudioConfirmationToast() {
-  // Create toast container
-  const audioToast = createDiv();
-  audioToast.id("audio-toast");
+// function showAudioConfirmationToast() {
+//   // Create toast container
+//   const audioToast = createDiv();
+//   audioToast.id("audio-toast");
 
-  // Toast styles
-  audioToast.style("display", "flex");
-  audioToast.style("align-items", "center");
-  audioToast.style("gap", "12px");
-  audioToast.style("white-space", "nowrap");
-  audioToast.style("max-width", "90vw");
-  audioToast.style("overflow", "hidden");
-  audioToast.style("background", "rgba(58, 58, 58, 0.95)");
-  audioToast.style("padding", "16px 24px");
-  audioToast.style("border-radius", "8px");
-  audioToast.style("box-shadow", "0 4px 10px rgba(0,0,0,0.3)");
-  audioToast.style("color", "white");
-  audioToast.style("font-family", "Karla, sans-serif");
-  audioToast.style("font-size", "16px");
-  audioToast.style("font-weight", "500");
-  audioToast.style("position", "absolute");
-  audioToast.style("top", "20px");
-  audioToast.style("left", "50%");
-  audioToast.style("transform", "translateX(-50%)");
-  audioToast.style("z-index", "20");
+//   // Toast styles
+//   audioToast.style("display", "flex");
+//   audioToast.style("align-items", "center");
+//   audioToast.style("gap", "12px");
+//   audioToast.style("white-space", "nowrap");
+//   audioToast.style("max-width", "90vw");
+//   audioToast.style("overflow", "hidden");
+//   audioToast.style("background", "rgba(58, 58, 58, 0.95)");
+//   audioToast.style("padding", "16px 24px");
+//   audioToast.style("border-radius", "8px");
+//   audioToast.style("box-shadow", "0 4px 10px rgba(0,0,0,0.3)");
+//   audioToast.style("color", "white");
+//   audioToast.style("font-family", "Karla, sans-serif");
+//   audioToast.style("font-size", "16px");
+//   audioToast.style("font-weight", "500");
+//   audioToast.style("position", "absolute");
+//   audioToast.style("top", "20px");
+//   audioToast.style("left", "50%");
+//   audioToast.style("transform", "translateX(-50%)");
+//   audioToast.style("z-index", "20");
 
-  // Add text inside (IMPORTANT: createSpan)
-  const audioText = createSpan("You should hear each other now. If you don't, call your partner on your phone and put it on speaker near your computer.");
-  audioText.parent(audioToast);
-  audioText.style("margin", "0");
-  audioText.style("margin-right", "16px");
-  audioText.style("flex-shrink", "0");
-  audioText.style("flex-grow", "1");
-  audioText.style("overflow", "hidden");
-  audioText.style("text-overflow", "ellipsis");
-  audioText.style("white-space", "nowrap");
-  audioText.style("min-width", "0");
+//   // Add text inside (IMPORTANT: createSpan)
+//   const audioText = createSpan("You should hear each other now. If you don't, call your partner on your phone and put it on speaker near your computer.");
+//   audioText.parent(audioToast);
+//   audioText.style("margin", "0");
+//   audioText.style("margin-right", "16px");
+//   audioText.style("flex-shrink", "0");
+//   audioText.style("flex-grow", "1");
+//   audioText.style("overflow", "hidden");
+//   audioText.style("text-overflow", "ellipsis");
+//   audioText.style("white-space", "nowrap");
+//   audioText.style("min-width", "0");
 
-  // Button
-  const gotItButton = createButton("Got it.");
-  gotItButton.parent(audioToast);
-  gotItButton.addClass("toast-button");
-  gotItButton.elt.addEventListener("click", (e) => {
-    e.stopPropagation();
-    audioToast.remove();
-  });
+//   // Button
+//   const gotItButton = createButton("Got it.");
+//   gotItButton.parent(audioToast);
+//   gotItButton.addClass("toast-button");
+//   gotItButton.elt.addEventListener("click", (e) => {
+//     e.stopPropagation();
+//     audioToast.remove();
+//   });
 
-  // Append toast to body (or another appropriate container)
-  document.body.appendChild(audioToast.elt);
+//   // Append toast to body (or another appropriate container)
+//   document.body.appendChild(audioToast.elt);
 
-  // Toast background
-  audioToast.elt.addEventListener("click", (e) => {
-    e.stopPropagation();
-  });
-}
+//   // Toast background
+//   audioToast.elt.addEventListener("click", (e) => {
+//     e.stopPropagation();
+//   });
+// }
