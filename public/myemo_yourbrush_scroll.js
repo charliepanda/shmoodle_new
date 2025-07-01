@@ -698,17 +698,11 @@ function gotFaces(error, result) {
 
 // ===== DRAW LOOP =====
 function draw() {
-  // ----- Scroll the offscreen canvas (scroll left by 1 pixel) -----
-  let currentTime = millis();
-  let deltaTime = currentTime - lastScrollTime;
-  
-  if (deltaTime >= (1000 / scrollSpeed)) { // Convert pixels/second to milliseconds/pixel
-    canvasGraphics.copy(canvasGraphics, 1, 0, width - 1, height, 0, 0, width - 1, height);
-    canvasGraphics.fill(0);
-    canvasGraphics.noStroke();
-    canvasGraphics.rect(width - 1, 0, 1, height);
-    lastScrollTime = currentTime;
-  }
+
+  canvasGraphics.copy(canvasGraphics, 1, 0, width - 1, height, 0, 0, width - 1, height);
+  canvasGraphics.fill(0);
+  canvasGraphics.noStroke();
+  canvasGraphics.rect(width - 1, 0, 1, height); 
 
   // ----- Local drawing using your partner's brush color -----
   // (Your partner's face controls the color you draw with.)
