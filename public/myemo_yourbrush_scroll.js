@@ -22,6 +22,9 @@ let canvasGraphics;
 // Video capture (for face detection)
 let videoInput;
 
+let lastScrollTime = 0;
+let scrollSpeed = 50; // pixels per second (adjust this value)
+
 // // WebRTC variables
 // let localStream;
 // let remoteStream;
@@ -699,10 +702,16 @@ function gotFaces(error, result) {
 // ===== DRAW LOOP =====
 function draw() {
 
-  canvasGraphics.copy(canvasGraphics, 1, 0, width - 1, height, 0, 0, width - 1, height);
-  canvasGraphics.fill(0);
-  canvasGraphics.noStroke();
-  canvasGraphics.rect(width - 1, 0, 1, height); 
+  let currentTime = millis();
+  let deltaTime = currentTime - lastScrollTime;
+  
+  if (deltaTime >= (1000 / scrollSpeed)) { // Convert pixels/second to milliseconds/pixel
+    canvasGraphics.copy(canvasGraphics, 1, 0, width - 1, height, 0, 0, width - 1, height);
+    canvasGraphics.fill(0);
+    canvasGraphics.noStroke();
+    canvasGraphics.rect(width - 1, 0, 1, height);
+    lastScrollTime = currentTime;
+  }
 
   // ----- Local drawing using your partner's brush color -----
   // (Your partner's face controls the color you draw with.)
